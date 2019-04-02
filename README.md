@@ -1,0 +1,2 @@
+# MagicFootballPredictions.github.io
+page

@@ -40,7 +40,6 @@ function getTables(){
 function fixTables(){
 	for(var i = 0 ; i < data.length; i++){
 		tables[i].setAttribute("id","predictionTable-"+i);
-		$("#predictionTable-"+i).DataTable();
 		var t =$("#predictionTable-"+i).DataTable();
 		for(var m in data[i].matches)
 			t.row.add([
@@ -69,7 +68,7 @@ function printAcca(){
 		if(i%2==0){
 			a+=acca[i].home.name+" vs "+acca[i].away.name+" => ";
         }else{
-			a+=acca[i]+(i!=acca.length-1?" --- ":"");
+			a+=acca[i]+(i!=acca.length-1?"<br>":"");
         }
     }
 	console.log(a);
@@ -78,23 +77,36 @@ function printAcca(){
 function getAcca(){
     var todaysMatches = data.find(function(a){return new Date(a.targetDate).getDate() == new Date().getDate();}).matches;
     var acca = [];
+    var limit = 6;
     for(var i = 0 ; i < todaysMatches.length; i++){
         if(todaysMatches[i].O[2] > 0.75 && todaysMatches[i].O[2] < 0.9 && todaysMatches[i].home.history.length > 7 && todaysMatches[i].away.history.length > 7) {
-            acca.push(todaysMatches[i]);
-			acca.push("Over 2.5");
-            if(acca.length == 6) return acca;
+            checkPriority(acca,2,todaysMatches[i],"Over 2.5", limit);
         }
-    }
-	for(var i = 0; i < todaysMatches.length; i++){
-		if(todaysMatches[i].GG + todaysMatches[i].O[1] >= 1.6 && todaysMatches[i].home.history.length > 7 && todaysMatches[i].away.history.length > 7){
-			acca.push(todaysMatches[i]);
+		else if(todaysMatches[i].GG + todaysMatches[i].O[1] >= 1.6 && todaysMatches[i].home.history.length > 7 && todaysMatches[i].away.history.length > 7){
 			if(todaysMatches[i].O[1] > todaysMatches[i].GG){
-				acca.push("GG");
+				checkPriority(acca,1,todaysMatches[i],"GG", limit);
             }else{
-				acca.push("Over 1.5");
+				checkPriority(acca,1,todaysMatches[i],"Over 1.5", limit);
             }
-			if(acca.length == 6) return acca;
         }
     }
 	return acca;
+}
+function checkPriority(acca, priority, match, text, limit){
+	if(acca.length < limit){
+		acca.push(match);
+		acca.push(text);
+	}else{
+		var toReplace = -1;
+		if(priority > 0){
+			toReplace = acca.findIndex(function(a){return typeof(a)=="string" && a.includes("1.5")});
+			if(priority > 1 && toReplace == -1){
+				toReplace = acca.findIndex(function(a){return typeof(a)=="string" && a.includes("GG")});
+			}
+		}
+		if(toReplace != -1){
+			acca[toReplace-1] = match;
+			acca[toReplace] = text;
+		}
+	}
 }

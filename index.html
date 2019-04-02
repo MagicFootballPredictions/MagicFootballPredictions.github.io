@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Magic Football Predictions</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom fonts for this template -->
+  <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet">
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="css/main.css" rel="stylesheet">
+
+  <!-- DataSort imports -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+</head>
+
+<body id="page-top">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+    <a class="navbar-brand js-scroll-trigger" href="#page-top">
+      <span class="d-block d-lg-none">Magic Football Predictions</span>
+      <span class="d-none d-lg-block">
+        <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="img/profile.jpg" alt="">
+      </span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link js-scroll-trigger" href="#about">Top Predictions</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link js-scroll-trigger" href="#experience">Prediction Tables</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link js-scroll-trigger" href="#education">About</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid p-0">
+
+    <section class="main-section p-3 p-lg-5 d-flex align-items-center" id="about">
+      <div class="w-100">
+        <h1 class="mb-0">Magic
+          <span class="text-primary">Football Predictions</span>
+        </h1>
+        <div class="subheading mb-5">By Tsinik Tsinik Tsinik
+        </div>
+        <p class="lead mb-5">Bet Accumulator for today: </p>
+        <div class="social-icons">
+          <a href="#">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <hr class="m-0">
+
+    <section class="main-section p-3 p-lg-5 d-flex justify-content-center" id="experience">
+      <div class="w-100" id="tables">
+        <h2 class="mb-5">Prediction Tables</h2>
+        <template>
+          <div class="table-date" data-toggle="collapse" data-target="">DATE</div>
+          <div class = "collapse collapsable">
+          <table class="predictionTable table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th class="th-sm">Time
+                </th>
+                <th class="th-sm">Home
+                </th>
+                <th class="th-sm">Score
+                </th>
+                <th class="th-sm">Away
+                </th>
+                <th class="th-sm">GG
+                </th>
+                <th class="th-sm">Ov0.5
+                </th>
+                <th class="th-sm">Ov1.5
+                </th>
+                <th class="th-sm">Ov2.5
+                </th>
+                <th class="th-sm">Ov3.5
+                </th>
+                <th class="th-sm">Ov4.5
+                </th>
+                <th class="th-sm">Data_Used
+                </th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+              <tr>
+                <th>Time
+                </th>
+                <th>Home
+                </th>
+                <th>Score
+                </th>
+                <th>Away
+                </th>
+                <th>GG
+                </th>
+                <th>Ov0.5
+                </th>
+                <th>Ov1.5
+                </th>
+                <th>Ov2.5
+                </th>
+                <th>Ov3.5
+                </th>
+                <th>Ov4.5
+                </th>
+                <th>Data_Used
+                </th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        </template>
+      </div>
+
+    </section>
+
+    <hr class="m-0">
+
+    <section class="-section p-3 p-lg-5 d-flex align-items-center" id="education">
+      <div class="w-100">
+        <h2 class="mb-5">About</h2>
+
+        <div class="main-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="main-content">
+            <h3 class="mb-0">Who Am I</h3>
+            <div class="subheading mb-3">Tsinik</div>
+            <div>I am a computer science major who loves crawllers and kinda likes football.<br>
+              In case you are wandering about who I am you can check my bio <a href="http://tsinwntas.github.io">here</a>.</div>
+          </div>
+        </div>
+
+        <div class="main-item d-flex flex-column flex-md-row justify-content-between">
+          <div class="main-content">
+            <h3 class="mb-0">Why AM I</h3>
+            <div class="subheading mb-3">Because I love crawllers</div>
+            <div>This was a good practice for me to practice my crawlling. Wanted to create a script that returned somewhat ok results. Also I am tired of seeing bet prediction sites charge for their service and promising their service beats the bookies. If it did, they wouldn't be charging you.
+              <br>
+            Mine is not perfect but with correct research can be really helpful and most importantly it is free!</div>
+          </div>
+        </div>
+
+        <div class="main-item d-flex flex-column flex-md-row justify-content-between">
+          <div class="main-content">
+            <h3 class="mb-0">Donate?</h3>
+            <div class="subheading mb-3">Please</div>
+            <div>This needs maintenance and I don't have the money to have it automated online by buying a server to host it. I can only run it from my computer and edit the data collected whenever I am on. So if you liked the page maybe donate to support it and keep it up and running. Thank you in advance I guess.<br>
+            Also this will stay on the university domain until I can buy a domain.</div>
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+              <input type="hidden" name="cmd" value="_s-xclick" />
+              <input type="hidden" name="hosted_button_id" value="LHB6BRR4GJR74" />
+              <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+              <img alt="" border="0" src="https://www.paypal.com/en_CY/i/scr/pixel.gif" width="1" height="1" />
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Plugin JavaScript -->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+<!-- #region datatables files -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<!-- #endregion -->
+  <!-- Custom scripts for this template -->
+  <script src="js/main.js"></script>
+
+  <!-- Data Manipulation Imports -->
+  <script src="js/data.js"></script>
+  <script src="js/datamanipulation.js"></script>
+
+</body>
+
+</html>

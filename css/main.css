@@ -205,3 +205,9 @@ bottom: .5em;
 .table-date{
   text-align: center;
 }
+
+#todaysAcca {
+  font-size:16;
+  font-weight: bold;
+  color:#212529;
+}

@@ -3,7 +3,10 @@ createTables();
 var dateElements = getDateElements();
 fixDates();
 var tables = getTables();
-this.onload = fixTables();
+this.onload = function (){
+	document.getElementById("todaysAcca").innerHTML = printAcca();
+	fixTables();
+}
 
 
 function createTables(){
@@ -57,4 +60,41 @@ function fixTables(){
 }
 function parseTime(time){
 	return (time.split(":")[0].length < 2 ? "0": "" ) + time;
+}
+
+function printAcca(){
+	var acca = getAcca();
+	var a = ""
+	for(var i = 0 ; i < acca.length; i++){
+		if(i%2==0){
+			a+=acca[i].home.name+" vs "+acca[i].away.name+" => ";
+        }else{
+			a+=acca[i]+(i!=acca.length-1?" --- ":"");
+        }
+    }
+	console.log(a);
+	return a;	
+}
+function getAcca(){
+    var todaysMatches = data.find(function(a){return new Date(a.targetDate).getDate() == new Date().getDate();}).matches;
+    var acca = [];
+    for(var i = 0 ; i < todaysMatches.length; i++){
+        if(todaysMatches[i].O[2] > 0.75 && todaysMatches[i].O[2] < 0.9 && todaysMatches[i].home.history.length > 7 && todaysMatches[i].away.history.length > 7) {
+            acca.push(todaysMatches[i]);
+			acca.push("Over 2.5");
+            if(acca.length == 6) return acca;
+        }
+    }
+	for(var i = 0; i < todaysMatches.length; i++){
+		if(todaysMatches[i].GG + todaysMatches[i].O[1] >= 1.6 && todaysMatches[i].home.history.length > 7 && todaysMatches[i].away.history.length > 7){
+			acca.push(todaysMatches[i]);
+			if(todaysMatches[i].O[1] > todaysMatches[i].GG){
+				acca.push("GG");
+            }else{
+				acca.push("Over 1.5");
+            }
+			if(acca.length == 6) return acca;
+        }
+    }
+	return acca;
 }

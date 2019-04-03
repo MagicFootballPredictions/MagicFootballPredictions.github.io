@@ -3,6 +3,7 @@ createTables();
 var dateElements = getDateElements();
 fixDates();
 var tables = getTables();
+var savedFilters = [];
 this.onload = function (){
 	document.getElementById("todaysAcca").innerHTML = printAcca();
 	fixTables();
@@ -69,19 +70,19 @@ function fixFiltering(){
 }
 function filterTable(i){
 	console.log("ASD");
+	var table = $("#predictionTable-"+i).DataTable();
 	var limit = 20;
 	if(!document.getElementsByName("filter-"+i)[0].checked){
-		//fix it pls
+		$.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(savedFilters[i]),1);
+		table.draw();
 		return;
 	}
-	var table = $("#predictionTable-"+i).DataTable();
 	//custom filtering function
-	$.fn.dataTable.ext.search.push(
-	    function( settings, data, dataIndex ) {
+	savedFilters[i] =function( settings, data, dataIndex ) {
 	    	if(settings.nTable.id != "predictionTable-"+i)return true;
 	        return parseInt(data[10]) >= limit;
-	    }
-	);
+	    }; 
+	$.fn.dataTable.ext.search.push(savedFilters[i]);
 	table.draw();
 }
 function parseTime(time){

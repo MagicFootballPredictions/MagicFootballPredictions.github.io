@@ -65,7 +65,8 @@ function fixTable(i){
 function fixFiltering(){
 	for(var i =0 ; i < data.length; i ++){
 		var filters = document.getElementsByClassName("dataTables_filter");
-		filters[i].innerHTML = '<label><input type="checkbox" name="filter-'+i+'" onclick="filterTable('+i+')">Data_Used atleast 20&nbsp;&nbsp;&nbsp;&nbsp;</label>'+filters[i].innerHTML;
+		filters[i].innerHTML = '<label><input type="checkbox" checked name="filter-'+i+'" onclick="filterTable('+i+')">Data_Used atleast 20&nbsp;&nbsp;&nbsp;&nbsp;</label>'+filters[i].innerHTML;
+		filterTable(i);
 	}
 }
 function filterTable(i){

@@ -6,6 +6,7 @@ var tables = getTables();
 this.onload = function (){
 	document.getElementById("todaysAcca").innerHTML = printAcca();
 	fixTables();
+	fixFiltering();
 }
 
 
@@ -40,7 +41,11 @@ function getTables(){
 function fixTables(){
 	for(var i = 0 ; i < data.length; i++){
 		tables[i].setAttribute("id","predictionTable-"+i);
-		var t =$("#predictionTable-"+i).DataTable();
+		fixTable(i);
+	}
+}
+function fixTable(i){
+	var t =$("#predictionTable-"+i).DataTable();
 		for(var m in data[i].matches)
 			t.row.add([
 	            parseTime(data[i].matches[m].time),
@@ -55,7 +60,29 @@ function fixTables(){
 	            parseFloat(data[i].matches[m].O[4]*100).toFixed(2),
 	            data[i].matches[m].home.history.length + data[i].matches[m].away.history.length
 	        ] ).draw( false );
+}
+function fixFiltering(){
+	for(var i =0 ; i < data.length; i ++){
+		var filters = document.getElementsByClassName("dataTables_filter");
+		filters[i].innerHTML = '<label><input type="checkbox" name="filter-'+i+'" onclick="filterTable('+i+')">Data_Used atleast 20&nbsp;&nbsp;&nbsp;&nbsp;</label>'+filters[i].innerHTML;
 	}
+}
+function filterTable(i){
+	console.log("ASD");
+	var limit = 20;
+	if(!document.getElementsByName("filter-"+i)[0].checked){
+		//fix it pls
+		return;
+	}
+	var table = $("#predictionTable-"+i).DataTable();
+	//custom filtering function
+	$.fn.dataTable.ext.search.push(
+	    function( settings, data, dataIndex ) {
+	    	if(settings.nTable.id != "predictionTable-"+i)return true;
+	        return parseInt(data[10]) >= limit;
+	    }
+	);
+	table.draw();
 }
 function parseTime(time){
 	return (time.split(":")[0].length < 2 ? "0": "" ) + time;
@@ -78,16 +105,14 @@ function getAcca(){
     var todaysMatches = data.find(function(a){return new Date(a.targetDate).getDate() == new Date().getDate();}).matches;
     var acca = [];
     var limit = 6;
+    var minHistory = 8;
     for(var i = 0 ; i < todaysMatches.length; i++){
-        if(todaysMatches[i].O[2] > 0.75 && todaysMatches[i].O[2] < 0.9 && todaysMatches[i].home.history.length > 7 && todaysMatches[i].away.history.length > 7) {
+        if(isWithinRange(todaysMatches[i].O[2],0.76,0.83) && hasEnoughData(todaysMatches[i],minHistory)) {
             checkPriority(acca,2,todaysMatches[i],"Over 2.5", limit);
-        }
-		else if(todaysMatches[i].GG + todaysMatches[i].O[1] >= 1.6 && todaysMatches[i].home.history.length > 7 && todaysMatches[i].away.history.length > 7){
-			if(todaysMatches[i].O[1] > todaysMatches[i].GG){
-				checkPriority(acca,1,todaysMatches[i],"GG", limit);
-            }else{
-				checkPriority(acca,1,todaysMatches[i],"Over 1.5", limit);
-            }
+        }else if(isWithinRange(todaysMatches[i].GG,0.72,0.87)&& hasEnoughData(todaysMatches[i],minHistory)){
+			checkPriority(acca,1,todaysMatches[i],"GG", limit);
+        }else if(isWithinRange(todaysMatches[i].O[1],0.7,1) && hasEnoughData(todaysMatches[i],minHistory)){
+			checkPriority(acca,1,todaysMatches[i],"Over 1.5", limit);
         }
     }
 	return acca;
@@ -110,3 +135,10 @@ function checkPriority(acca, priority, match, text, limit){
 		}
 	}
 }
+function isWithinRange(value, lowerRange, upperRange){
+	return value <= upperRange && value >= lowerRange;
+}
+function hasEnoughData(match,limit){
+	return match.home.history.length > limit && match.away.history.length > limit;
+}
+

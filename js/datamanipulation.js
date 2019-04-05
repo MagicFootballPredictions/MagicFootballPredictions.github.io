@@ -10,7 +10,8 @@ this.onload = function (){
 	fixFiltering();
 }
 
-
+colorSpectrumClasses = ["worst", "bad", "medBad", "lightBad", "med", "lightGood", "medGood", "good", "best"];
+colorSpectrumRanges = [25,35,45,55,65,75,85,95,105];
 function createTables(){
 	for(d in data){
 		var temp = document.getElementsByTagName("template")[0];
@@ -47,8 +48,8 @@ function fixTables(){
 }
 function fixTable(i){
 	var t =$("#predictionTable-"+i).DataTable();
-		for(var m in data[i].matches)
-			t.row.add([
+		for(var m in data[i].matches){
+			var rowNode = t.row.add([
 	            parseTime(data[i].matches[m].time),
 	            data[i].matches[m].home.name,
 	            data[i].matches[m].score,
@@ -60,7 +61,27 @@ function fixTable(i){
 	            parseFloat(data[i].matches[m].O[3]*100).toFixed(2),
 	            parseFloat(data[i].matches[m].O[4]*100).toFixed(2),
 	            data[i].matches[m].home.history.length + data[i].matches[m].away.history.length
-	        ] ).draw( false );
+	        ] ).draw( false ).node();
+	        fixColorSchemeByRow(rowNode);
+		}
+	//fixColorScheme(t);
+}
+function fixColorSchemeByRow(row){
+	var colData = $(row).find("td");
+
+	for(var i =0; i < colData.length-1; i++){
+		paintCell(colData[i]);
+	}
+}
+function paintCell(cell){
+	if(!isNaN(cell.innerText)){
+		for(var i in colorSpectrumRanges){
+			if(parseFloat(cell.innerText) < colorSpectrumRanges[i] ){
+				cell.className += colorSpectrumClasses[i];
+				break;
+			}
+		}
+	}
 }
 function fixFiltering(){
 	for(var i =0 ; i < data.length; i ++){
@@ -70,7 +91,6 @@ function fixFiltering(){
 	}
 }
 function filterTable(i){
-	console.log("ASD");
 	var table = $("#predictionTable-"+i).DataTable();
 	var limit = 20;
 	if(!document.getElementsByName("filter-"+i)[0].checked){
@@ -87,9 +107,9 @@ function filterTable(i){
 	table.draw();
 }
 function parseTime(time){
+
 	return (time.split(":")[0].length < 2 ? "0": "" ) + time;
 }
-
 function printAcca(){
 	var acca = getAcca();
 	var a = ""
@@ -138,9 +158,11 @@ function checkPriority(acca, priority, match, text, limit){
 	}
 }
 function isWithinRange(value, lowerRange, upperRange){
+
 	return value <= upperRange && value >= lowerRange;
 }
 function hasEnoughData(match,limit){
+
 	return match.home.history.length > limit && match.away.history.length > limit;
 }
 

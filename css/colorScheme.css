@@ -1,0 +1,27 @@
+.worst{
+	background-color: #FF0000;
+}
+.bad{
+	background-color: #FF3333;
+}
+.medBad{
+	background-color: #FF6A6A;
+}
+.lightBad{
+	background-color: #FFCCCC;
+}
+.med{
+	background-color: #B2D0B4;
+}
+.lightGood{
+	background-color: #CCFFCC;
+}
+.medGood{
+	background-color: #9AFF9A;
+}
+.good{
+	background-color: #33FF33;
+}
+.best{
+	background-color: #00FF00;
+}

@@ -12,6 +12,7 @@ this.onload = function (){
 
 colorSpectrumClasses = ["worst", "bad", "medBad", "lightBad", "med", "lightGood", "medGood", "good", "best"];
 colorSpectrumRanges = [25,35,45,55,65,75,85,95,105];
+colorSpectrumRangesFT = [15,25,30,35,40,45,55,65,105];
 function createTables(){
 	for(d in data){
 		var temp = document.getElementsByTagName("template")[0];
@@ -54,12 +55,13 @@ function fixTable(i){
 	            data[i].matches[m].home.name,
 	            data[i].matches[m].score,
 	            data[i].matches[m].away.name,
+	            parseFloat(data[i].matches[m].FT[0]*100).toFixed(2),
+	            parseFloat(data[i].matches[m].FT[1]*100).toFixed(2),
+	            parseFloat(data[i].matches[m].FT[2]*100).toFixed(2),
 	            parseFloat(data[i].matches[m].GG*100).toFixed(2),
-	            parseFloat(data[i].matches[m].O[0]*100).toFixed(2),
 	            parseFloat(data[i].matches[m].O[1]*100).toFixed(2),
 	            parseFloat(data[i].matches[m].O[2]*100).toFixed(2),
 	            parseFloat(data[i].matches[m].O[3]*100).toFixed(2),
-	            parseFloat(data[i].matches[m].O[4]*100).toFixed(2),
 	            data[i].matches[m].home.history.length + data[i].matches[m].away.history.length
 	        ] ).draw( false ).node();
 	        fixColorSchemeByRow(rowNode);
@@ -68,9 +70,21 @@ function fixTable(i){
 }
 function fixColorSchemeByRow(row){
 	var colData = $(row).find("td");
-
-	for(var i =0; i < colData.length-1; i++){
+	for(var i = 4; i < 7; i++){
+		paintFTCell(colData[i]);
+	}
+	for(var i =7; i < colData.length-1; i++){
 		paintCell(colData[i]);
+	}
+}
+function paintFTCell(cell){	
+	if(!isNaN(cell.innerText)){
+		for(var i in colorSpectrumRangesFT){
+			if(parseFloat(cell.innerText) < colorSpectrumRangesFT[i] ){
+				cell.className += colorSpectrumClasses[i];
+				break;
+			}
+		}
 	}
 }
 function paintCell(cell){
@@ -101,7 +115,7 @@ function filterTable(i){
 	//custom filtering function
 	savedFilters[i] =function( settings, data, dataIndex ) {
 	    	if(settings.nTable.id != "predictionTable-"+i)return true;
-	        return parseInt(data[10]) >= limit;
+	        return parseInt(data[data.length-1]) >= limit;
 	    }; 
 	$.fn.dataTable.ext.search.push(savedFilters[i]);
 	table.draw();
@@ -129,7 +143,13 @@ function getAcca(){
     var limit = 6;
     var minHistory = 8;
     for(var i = 0 ; i < todaysMatches.length; i++){
-        if(isWithinRange(todaysMatches[i].O[2],0.76,0.83) && hasEnoughData(todaysMatches[i],minHistory)) {
+        if(isWithinRange(todaysMatches[i].FT[0],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
+            checkPriority(acca,3,todaysMatches[i],"Home Wins", limit);   
+        }else if(isWithinRange(todaysMatches[i].FT[1],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
+            checkPriority(acca,3,todaysMatches[i],"Draw", limit);   
+        }else if(isWithinRange(todaysMatches[i].FT[2],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
+            checkPriority(acca,3,todaysMatches[i],"Away Wins", limit);    	
+        }else if(isWithinRange(todaysMatches[i].O[2],0.76,0.83) && hasEnoughData(todaysMatches[i],minHistory)) {
             checkPriority(acca,2,todaysMatches[i],"Over 2.5", limit);
         }else if(isWithinRange(todaysMatches[i].GG,0.72,0.87)&& hasEnoughData(todaysMatches[i],minHistory)){
 			checkPriority(acca,1,todaysMatches[i],"GG", limit);
@@ -138,6 +158,28 @@ function getAcca(){
         }
     }
 	return acca;
+}
+function getModestAcca(){
+	/*var bestModesFT = 0;
+	var bestModestO25 = 0;
+	var bestModestGG = 0;
+	var bestModestO15 =0;
+	var acca = [];
+    var limit = 6;
+    var minHistory = 8;
+    var todaysMatches = data[1];// data.find(function(a){return new Date(a.targetDate).getDate() == new Date().getDate();}).matches;
+
+    for(var i = 0 ; i < todaysMatches.length; i++){
+    	if(isWithinRange(todaysMatches[i].FT[0]),)
+        if(isWithinRange(todaysMatches[i].O[2],0.65,0.75) && hasEnoughData(todaysMatches[i],minHistory)) {
+            checkPriority(acca,2,todaysMatches[i],"Over 2.5", limit);
+        }else if(isWithinRange(todaysMatches[i].GG,0.75,0.85)&& hasEnoughData(todaysMatches[i],minHistory)){
+			checkPriority(acca,1,todaysMatches[i],"GG", limit);
+        }else if(isWithinRange(todaysMatches[i].O[1],0.7,1) && hasEnoughData(todaysMatches[i],minHistory)){
+			checkPriority(acca,0,todaysMatches[i],"Over 1.5", limit);
+        }
+    }
+	return acca;*/
 }
 function checkPriority(acca, priority, match, text, limit){
 	if(acca.length < limit){
@@ -149,6 +191,9 @@ function checkPriority(acca, priority, match, text, limit){
 			toReplace = acca.findIndex(function(a){return typeof(a)=="string" && a.includes("1.5")});
 			if(priority > 1 && toReplace == -1){
 				toReplace = acca.findIndex(function(a){return typeof(a)=="string" && a.includes("GG")});
+				if(priority > 2 && toReplace == -1){
+					toReplace = acca.findIndex(function(a){return typeof(a)=="string" && a.includes("2.5")});
+				}
 			}
 		}
 		if(toReplace != -1){

@@ -144,9 +144,7 @@ function getAcca(){
     var minHistory = 8;
     for(var i = 0 ; i < todaysMatches.length; i++){
         if(isWithinRange(todaysMatches[i].FT[0],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
-            checkPriority(acca,3,todaysMatches[i],"Home Wins", limit);   
-        }else if(isWithinRange(todaysMatches[i].FT[1],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
-            checkPriority(acca,3,todaysMatches[i],"Draw", limit);   
+            checkPriority(acca,3,todaysMatches[i],"Home Wins", limit);
         }else if(isWithinRange(todaysMatches[i].FT[2],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
             checkPriority(acca,3,todaysMatches[i],"Away Wins", limit);    	
         }else if(isWithinRange(todaysMatches[i].O[2],0.76,0.83) && hasEnoughData(todaysMatches[i],minHistory)) {

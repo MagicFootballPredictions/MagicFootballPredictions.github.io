@@ -211,6 +211,12 @@ bottom: .5em;
   font-weight: bold;
   color:#212529;
 }
-.prev{
+.prev:hover{
   cursor: pointer;
+}
+.data_used_clickable:hover{
+  cursor: pointer;
+}
+.shrink{
+  font-size: 12px;
 }

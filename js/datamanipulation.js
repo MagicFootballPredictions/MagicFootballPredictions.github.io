@@ -22,10 +22,10 @@ function createTables(){
 	}
 }
 function getDateElements(){
+
 	return document.getElementsByClassName("table-date");
 }
 function fixDates(){
-	console.log(dateElements);
 	for(var d = 0; d<dateElements.length; d++){
 		console.log(setDate(data[d].targetDate));
 		dateElements[d].innerHTML = setDate(data[d].targetDate);
@@ -37,9 +37,11 @@ function fixDates(){
 	}
 }
 function setDate(date){
+
 	return new Date(date).toDateString();
 }
 function getTables(){
+
 	return document.getElementsByClassName("predictionTable");
 }
 function fixTables(){
@@ -65,12 +67,17 @@ function fixTable(i){
 	            parseFloat(data[i].matches[m].O[3]*100).toFixed(2),
 	            data[i].matches[m].home.history.length + data[i].matches[m].away.history.length
 	        ] ).draw( false ).node();
-	        fixColorSchemeByRow(rowNode);
+			var colData = $(rowNode).find("td");
+	        fixColorSchemeByRow(colData);
+	        colData[0].className+=" shrink";
+	        colData[colData.length - 1].className+=" data_used_clickable";
+	        colData[colData.length - 1].setAttribute("data-toggle","modal");
+	        colData[colData.length - 1].setAttribute("data-target","#modalCenter");
+	        colData[colData.length - 1].setAttribute("onclick","setModal("+i+","+m+")");
 		}
 	//fixColorScheme(t);
 }
-function fixColorSchemeByRow(row){
-	var colData = $(row).find("td");
+function fixColorSchemeByRow(colData){
 	for(var i = 4; i < 7; i++){
 		paintFTCell(colData[i]);
 	}
@@ -98,12 +105,43 @@ function paintCell(cell){
 		}
 	}
 }
+function setModal(dataIndex,matchIndex){
+	var match = data[dataIndex].matches[matchIndex];
+	var table = $("#modal-table").DataTable({
+   		bSort: false,
+   		bFilter: false
+	});
+	var rows = table
+    .rows()
+    .remove()
+    .draw();
+	document.getElementById("modalLongTitle").innerText = match.time+ " " + match.home.name +" "+ match.score +" "+ match.away.name;
+	for(var i =0 ; i < Math.max(match.home.history.length,match.away.history.length); i++){
+		table.row.add([
+			match.home.history[i]? match.home.history[i].dataArray[0]:"",
+			match.home.history[i]? match.home.history[i].dataArray[1]:"",
+			match.home.history[i]? match.home.history[i].dataArray[2]:"",
+			match.home.history[i]? match.home.history[i].dataArray[3]:"",
+			"-",
+			match.away.history[i]? match.away.history[i].dataArray[0]:"",
+			match.away.history[i]? match.away.history[i].dataArray[1]:"",
+			match.away.history[i]? match.away.history[i].dataArray[2]:"",
+			match.away.history[i]? match.away.history[i].dataArray[3]:"",
+			]).draw(false);
+	}
+}
 function fixFiltering(){
 	for(var i =0 ; i < data.length; i ++){
 		var filters = document.getElementsByClassName("dataTables_filter");
-		filters[i].innerHTML = '<label><input type="checkbox" checked name="filter-'+i+'" onclick="filterTable('+i+')">Data_Used atleast 20&nbsp;&nbsp;&nbsp;&nbsp;</label>'+filters[i].innerHTML;
+		createCheckBoxEl(filters[i],i);
+		//filters[i].innerHTML = '<label><input type="checkbox" checked name="filter-'+i+'" onclick="filterTable('+i+')">Data_Used atleast 20&nbsp;&nbsp;&nbsp;&nbsp;</label>'+filters[i].innerHTML;
 		filterTable(i);
 	}
+}
+function createCheckBoxEl(filters,i){
+	var label = document.createElement("label");
+	label.innerHTML = '<input type="checkbox" checked name="filter-'+i+'" onclick="filterTable('+i+')">Data_Used atleast 20&nbsp;&nbsp;&nbsp;&nbsp;';
+	filters.insertBefore(label,filters.firstChild);
 }
 function filterTable(i){
 	var table = $("#predictionTable-"+i).DataTable();
@@ -119,7 +157,7 @@ function filterTable(i){
 	        return parseInt(data[data.length-1]) >= limit;
 	    }; 
 	$.fn.dataTable.ext.search.push(savedFilters[i]);
-	table.draw();
+	//table.draw();
 }
 function parseTime(time){
 

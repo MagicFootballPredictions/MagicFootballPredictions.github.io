@@ -211,3 +211,6 @@ bottom: .5em;
   font-weight: bold;
   color:#212529;
 }
+.prev{
+  cursor: pointer;
+}

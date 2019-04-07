@@ -6,6 +6,7 @@ var tables = getTables();
 var savedFilters = [];
 this.onload = function (){
 	document.getElementById("todaysAcca").innerHTML = printAcca();
+	document.getElementById("showPrev").innerHTML = printPreviousAcca();
 	fixTables();
 	fixFiltering();
 }
@@ -125,20 +126,38 @@ function parseTime(time){
 	return (time.split(":")[0].length < 2 ? "0": "" ) + time;
 }
 function printAcca(){
-	var acca = getAcca();
+	var acca = getAcca(data.find(function(a){return new Date(a.targetDate).getDate() == new Date().getDate();}).matches);
 	var a = ""
 	for(var i = 0 ; i < acca.length; i++){
 		if(i%2==0){
 			a+=acca[i].home.name+" vs "+acca[i].away.name+" => ";
         }else{
-			a+=acca[i]+(i!=acca.length-1?"<br>":"");
+			a+=acca[i]+" ("+acca[i-1].score+")"+(i!=acca.length-1?"<br>":"");
         }
     }
 	console.log(a);
 	return a;	
 }
-function getAcca(){
-    var todaysMatches = data.find(function(a){return new Date(a.targetDate).getDate() == new Date().getDate();}).matches;
+function printPreviousAcca(){
+	var d = 0;
+	var a = "";
+	do{
+		if(i > 0)a+="<br>";
+		var tDate = new Date(data[d].targetDate);
+		a+=tDate.getDate()+"/"+(tDate.getMonth()+1)+"<br>";
+		var acca = getAcca(data[d].matches);
+		for(var i = 0 ; i < acca.length; i++){
+			if(i%2==0){
+				a+=acca[i].home.name+" vs "+acca[i].away.name+" => ";
+	        }else{
+				a+=acca[i]+" ("+acca[i-1].score+")"+(i!=acca.length-1?"<br>":"");
+	        }
+	    }
+	    d++;
+	}while(new Date(data[d].targetDate).getDate() != new Date().getDate());
+	return a;
+}
+function getAcca(todaysMatches){
     var acca = [];
     var limit = 6;
     var minHistory = 8;

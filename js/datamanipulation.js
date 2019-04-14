@@ -5,6 +5,7 @@ fixDates();
 var tables = getTables();
 var savedFilters = [];
 this.onload = function (){
+	fixData();
 	document.getElementById("todaysAcca").innerHTML = printAcca();
 	document.getElementById("showPrev").innerHTML = printPreviousAcca();
 	fixTables();
@@ -43,6 +44,13 @@ function setDate(date){
 function getTables(){
 
 	return document.getElementsByClassName("predictionTable");
+}
+function fixData(){
+	for(var i =0 ; i < data.length; i++)
+		data[i].matches.sort(function(a,b){ return priority(b) - priority(a);});
+}
+function priority(m){
+	return m.FT[0]*10000*10000 + m.FT[2]*1000*10000 + m.O[2]*100*10000 + m.GG*10*10000 + m.O[1]*10000;
 }
 function fixTables(){
 	for(var i = 0 ; i < data.length; i++){
@@ -165,51 +173,44 @@ function parseTime(time){
 }
 function printAcca(){
 	var acca = getAcca(data.find(function(a){return new Date(a.targetDate).getDate() == new Date().getDate();}).matches);
-	var a = ""
-	for(var i = 0 ; i < acca.length; i++){
-		if(i%2==0){
-			a+=acca[i].home.name+" vs "+acca[i].away.name+" => ";
-        }else{
-			a+=acca[i]+" ("+acca[i-1].score+")"+(i!=acca.length-1?"<br>":"");
-        }
-    }
-	console.log(a);
-	return a;	
+	return accaStringify(acca);	
 }
 function printPreviousAcca(){
 	var d = 0;
 	var a = "";
 	do{
-		if(i > 0)a+="<br>";
+		if(d > 0)a+="<br>";
 		var tDate = new Date(data[d].targetDate);
 		a+=tDate.getDate()+"/"+(tDate.getMonth()+1)+"<br>";
 		var acca = getAcca(data[d].matches);
-		for(var i = 0 ; i < acca.length; i++){
-			if(i%2==0){
-				a+=acca[i].home.name+" vs "+acca[i].away.name+" => ";
-	        }else{
-				a+=acca[i]+" ("+acca[i-1].score+")"+(i!=acca.length-1?"<br>":"");
-	        }
-	    }
+		a+= accaStringify(acca);
 	    d++;
 	}while(new Date(data[d].targetDate).getDate() != new Date().getDate());
 	return a;
 }
+function accaStringify(acca){
+	var a = "";
+	for(var i = 0 ; i < acca.length; i++){
+			a+=acca[i].match.home.name+" vs "+acca[i].match.away.name+" => ";
+			a+=acca[i].text+" ("+acca[i].match.score+")"+(i!=acca.length-1?"<br>":"");
+    }
+    return a;
+}
 function getAcca(todaysMatches){
     var acca = [];
-    var limit = 6;
+    var limit = 3;
     var minHistory = 8;
     for(var i = 0 ; i < todaysMatches.length; i++){
         if(isWithinRange(todaysMatches[i].FT[0],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
-            checkPriority(acca,3,todaysMatches[i],"Home Wins", limit);
+            checkPriority(acca,3,todaysMatches[i],"Home Wins", limit, 0.55);
         }else if(isWithinRange(todaysMatches[i].FT[2],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
-            checkPriority(acca,3,todaysMatches[i],"Away Wins", limit);    	
+            checkPriority(acca,3,todaysMatches[i],"Away Wins", limit, 0.55);    	
         }else if(isWithinRange(todaysMatches[i].O[2],0.76,0.83) && hasEnoughData(todaysMatches[i],minHistory)) {
-            checkPriority(acca,2,todaysMatches[i],"Over 2.5", limit);
+            checkPriority(acca,2,todaysMatches[i],"Over 2.5", limit, 0.65);
         }else if(isWithinRange(todaysMatches[i].GG,0.72,0.87)&& hasEnoughData(todaysMatches[i],minHistory)){
-			checkPriority(acca,1,todaysMatches[i],"GG", limit);
+			checkPriority(acca,1,todaysMatches[i],"GG", limit, 0.75);
         }else if(isWithinRange(todaysMatches[i].O[1],0.7,1) && hasEnoughData(todaysMatches[i],minHistory)){
-			checkPriority(acca,1,todaysMatches[i],"Over 1.5", limit);
+			checkPriority(acca,1,todaysMatches[i],"Over 1.5", limit, 1);
         }
     }
 	return acca;
@@ -236,24 +237,28 @@ function getModestAcca(){
     }
 	return acca;*/
 }
-function checkPriority(acca, priority, match, text, limit){
+function checkPriority(acca, priority, match, text, limit, peak){
 	if(acca.length < limit){
-		acca.push(match);
-		acca.push(text);
+		acca.push(new Bet(match,text,priority,peak));
 	}else{
 		var toReplace = -1;
 		if(priority > 0){
-			toReplace = acca.findIndex(function(a){return typeof(a)=="string" && a.includes("1.5")});
+			toReplace = searchLowestPeakByPriority(acca, 0);
 			if(priority > 1 && toReplace == -1){
-				toReplace = acca.findIndex(function(a){return typeof(a)=="string" && a.includes("GG")});
+				toReplace = searchLowestPeakByPriority(acca, 1);
 				if(priority > 2 && toReplace == -1){
-					toReplace = acca.findIndex(function(a){return typeof(a)=="string" && a.includes("2.5")});
+					toReplace = searchLowestPeakByPriority(acca, 2);
+					if(toReplace == -1){
+						toReplace = searchLowestPeakByPriority(acca, 3);
+					}
 				}
 			}
 		}
 		if(toReplace != -1){
-			acca[toReplace-1] = match;
-			acca[toReplace] = text;
+			if(priority > acca[toReplace].priority)
+				acca[toReplace] = new Bet(match, text, priority, peak);
+			else if(Math.abs(peak - getValue(match,text)) < Math.abs(peak - getValue(acca[toReplace].match,acca[toReplace].text)) )
+				acca[toReplace] = new Bet(match, text, priority, peak);
 		}
 	}
 }
@@ -265,4 +270,33 @@ function hasEnoughData(match,limit){
 
 	return match.home.history.length > limit && match.away.history.length > limit;
 }
-
+function searchLowestPeakByPriority(acca, priority){
+	var peak = -1;
+	var maxDistance = -1;
+	for(var i = 0 ; i < acca.length; i++){
+		if(acca[i].priority == priority){
+			if(peak == -1)
+				peak = acca[i].peak;
+			if(maxDistance == -1)
+				maxDistance = i;
+			else if(Math.abs(peak - getValue(acca[maxDistance].match, acca[maxDistance].text)) < Math.abs(peak - getValue(acca[i].match, acca[i].text)) )
+				maxDistance == i
+		}
+	}
+	return maxDistance;
+}
+function getValue(match, text){
+	switch (true){
+		case text.includes("Home"): return match.FT[0];
+		case text.includes("Away"): return match.FT[2];
+		case text.includes("2.5"): return match.O[2];
+		case text.includes("1.5"): return match.O[1];
+		case text.includes("GG"): return match.GG;
+	}
+}
+function Bet(match, text, priority, peak){
+	this.match = match;
+	this.text = text;
+	this.priority = priority;
+	this.peak = peak;
+}

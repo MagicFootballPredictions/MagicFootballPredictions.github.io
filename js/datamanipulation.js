@@ -8,6 +8,7 @@ this.onload = function (){
 	fixData();
 	document.getElementById("todaysAcca").innerHTML = printAcca();
 	document.getElementById("showPrev").innerHTML = printPreviousAcca();
+	document.getElementById("underdogModalBody").innerHTML = printUnderdogAcca();
 	fixTables();
 	fixFiltering();
 }
@@ -172,7 +173,7 @@ function parseTime(time){
 	return (time.split(":")[0].length < 2 ? "0": "" ) + time;
 }
 function printAcca(){
-	var acca = getAcca(data.find(function(a){return new Date(a.targetDate).getDate() == new Date().getDate();}).matches);
+	var acca = getAcca(data.find(function(a){return new Date(a.targetDate).getDate() == new Date().getDate();}).matches,false);
 	return accaStringify(acca);	
 }
 function printPreviousAcca(){
@@ -182,10 +183,23 @@ function printPreviousAcca(){
 		if(d > 0)a+="<br>";
 		var tDate = new Date(data[d].targetDate);
 		a+=tDate.getDate()+"/"+(tDate.getMonth()+1)+"<br>";
-		var acca = getAcca(data[d].matches);
+		var acca = getAcca(data[d].matches,false);
 		a+= accaStringify(acca);
 	    d++;
 	}while(new Date(data[d].targetDate).getDate() != new Date().getDate());
+	return a;
+}
+function printUnderdogAcca(){
+	var d = 4;
+	var a = "";
+	do{
+		if(d > 0)a+="<br>";
+		var tDate = new Date(data[d].targetDate);
+		a+=tDate.getDate()+"/"+(tDate.getMonth()+1)+"<br>";
+		var acca = getAcca(data[d].matches,true);
+		a+= accaStringify(acca);
+	    d--;
+	}while(d>=0);
 	return a;
 }
 function accaStringify(acca){
@@ -196,20 +210,20 @@ function accaStringify(acca){
     }
     return a;
 }
-function getAcca(todaysMatches){
+function getAcca(todaysMatches, careAboutUnderdog){
     var acca = [];
     var limit = 3;
     var minHistory = 8;
     for(var i = 0 ; i < todaysMatches.length; i++){
-        if(isWithinRange(todaysMatches[i].FT[0],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
+        if(isWithinRange(todaysMatches[i].FT[0],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory) && (!careAboutUnderdog || isUnderdog(todaysMatches[i].home.odds))) {
             checkPriority(acca,3,todaysMatches[i],"Home Wins", limit, 0.55);
-        }else if(isWithinRange(todaysMatches[i].FT[2],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory)) {
+        }else if(isWithinRange(todaysMatches[i].FT[2],0.45,0.85) && hasEnoughData(todaysMatches[i],minHistory) && (!careAboutUnderdog || isUnderdog(todaysMatches[i].away.odds))) {
             checkPriority(acca,3,todaysMatches[i],"Away Wins", limit, 0.55);    	
-        }else if(isWithinRange(todaysMatches[i].O[2],0.76,0.83) && hasEnoughData(todaysMatches[i],minHistory)) {
+        }else if(isWithinRange(todaysMatches[i].O[2],0.76,0.83) && hasEnoughData(todaysMatches[i],minHistory) && !careAboutUnderdog) {
             checkPriority(acca,2,todaysMatches[i],"Over 2.5", limit, 0.65);
-        }else if(isWithinRange(todaysMatches[i].GG,0.72,0.87)&& hasEnoughData(todaysMatches[i],minHistory)){
+        }else if(isWithinRange(todaysMatches[i].GG,0.72,0.87)&& hasEnoughData(todaysMatches[i],minHistory) && !careAboutUnderdog){
 			checkPriority(acca,1,todaysMatches[i],"GG", limit, 0.75);
-        }else if(isWithinRange(todaysMatches[i].O[1],0.7,1) && hasEnoughData(todaysMatches[i],minHistory)){
+        }else if(isWithinRange(todaysMatches[i].O[1],0.7,1) && hasEnoughData(todaysMatches[i],minHistory) && !careAboutUnderdog){
 			checkPriority(acca,1,todaysMatches[i],"Over 1.5", limit, 1);
         }
     }
@@ -236,6 +250,9 @@ function getModestAcca(){
         }
     }
 	return acca;*/
+}
+function isUnderdog(value){
+	return value > 3;
 }
 function checkPriority(acca, priority, match, text, limit, peak){
 	if(acca.length < limit){

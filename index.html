@@ -74,6 +74,7 @@
         </h1>
         <div class="subheading mb-5">By Tsinik Tsinik Tsinik
         </div>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#underdogModal">Show Underdog Acca</button>
         <p class="lead mb-5">Bet Accumulator for today: <br>
           <span id="todaysAcca"></span> 
         </p>
@@ -205,6 +206,25 @@
       </div>
     </section>
   </div>
+
+<!-- Underdog Modal -->
+<div class="modal fade" id="underdogModal" tabindex="-1" role="dialog" aria-labelledby="underdogModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="underdogModalTitle">Underdog Acca</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="underdogModalBody">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Modal Region -->
   <div class="modal fade" id="modalCenter" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered" role="document">

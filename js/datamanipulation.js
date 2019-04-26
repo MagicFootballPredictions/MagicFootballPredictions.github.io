@@ -297,7 +297,7 @@ function searchLowestPeakByPriority(acca, priority){
 			if(maxDistance == -1)
 				maxDistance = i;
 			else if(Math.abs(peak - getValue(acca[maxDistance].match, acca[maxDistance].text)) < Math.abs(peak - getValue(acca[i].match, acca[i].text)) )
-				maxDistance == i
+				maxDistance = i;
 		}
 	}
 	return maxDistance;

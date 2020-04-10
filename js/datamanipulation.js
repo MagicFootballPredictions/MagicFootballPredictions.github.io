@@ -143,7 +143,6 @@ function fixFiltering(){
 	for(var i =0 ; i < data.length; i ++){
 		var filters = document.getElementsByClassName("dataTables_filter");
 		createCheckBoxEl(filters[i],i);
-		//filters[i].innerHTML = '<label><input type="checkbox" checked name="filter-'+i+'" onclick="filterTable('+i+')">Data_Used atleast 20&nbsp;&nbsp;&nbsp;&nbsp;</label>'+filters[i].innerHTML;
 		filterTable(i);
 	}
 }
@@ -166,7 +165,7 @@ function filterTable(i){
 	        return parseInt(data[data.length-1]) >= limit;
 	    }; 
 	$.fn.dataTable.ext.search.push(savedFilters[i]);
-	//table.draw();
+	table.draw();
 }
 function parseTime(time){
 
